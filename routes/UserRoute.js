@@ -2,11 +2,11 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/UserModel");
+const AuthMiddleware = require("../middlewares/auth");
 const router = express.Router();
+const env = require("../env");
 
-const SECRET = "TS@I55Y!A";
-
-//create a new user
+//signup a new user
 router.post("/", async (req, res) => {
   try{
     req.body.password = await bcrypt. hash(req.body.password, 10);
@@ -14,11 +14,15 @@ router.post("/", async (req, res) => {
     
     const user = await UserModel.create(req.body);
 
-    const token = jwt.sign({id: user.id}, SECRET, {expiresIn: "1h"})
+    const result = user.toJSON();
+
+    delete result.password;
+
+    const token = jwt.sign({id: user.id}, env.jwt_secret, {expiresIn: "1h"});
 
     res.status(200).json({
       status: "success",
-      data: {user, token},
+      data: {user: result, token},
     });
   } catch(err){
     console.log(err);
@@ -30,28 +34,66 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get s user's profile
-router.get("/profile", async function(req, res) {
+//login a user
+router.post("/login", async function(req, res){
   try {
-    const authHeader = req.headers.authorization;
-
-    if(!authHeader){
+    const user = await UserModel.findOne({email: req.body.email}, "+password");
+    
+    if(!user){
       return res
         .status(401)
-        .json({status:"error", message: "Please specify a header"});
+        .json({
+          status:"error", 
+          message: "Invalid login details"
+        });
     }
 
-    const token = authHeader.split(" ")[1];
+    const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
 
-    const tokenData = jwt.verify(token, SECRET);
+    if(!isPasswordValid){
+      return res
+        .status(401)
+        .json({
+          status:"error", 
+          message: "Invalid login details"
+        });
+    }
 
-    const user = await UserModel.findById(tokenData.id);
+    const token  = jwt.sign({id: user.id}, env.jwt_secret);
+    
+    res.json({
+      status: "success",
+      data: {token}
+    });
 
-    res.json({status: "success", user});
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Error occured during login',
+    });
+  }
+});
+
+// Get s user's profile
+router.get("/profile", AuthMiddleware, async function(req, res) {
+  try {
+
+    const user = await UserModel.findById(req.user);  
+
+    if(!user){
+      return res
+        .status(404)
+        .json({status:"error", message: "User's details not available"});
+    }
+
+    // res.json({
+    //   status: "success", 
+    //   user
+    // });
 
     res.json({
-      status: "succcess",
-      data: users,
+      status: "success",
+      data: user,
     });
   } catch (err) {
     console.log(err);
@@ -66,6 +108,14 @@ router.get("/profile", async function(req, res) {
 router.get("", async function(req, res) {
   try {
     const users = await UserModel.find();
+
+    if(users.length === 0){
+      return res.status(403).json({
+        status:"success", 
+        message: "User details not available"
+      });
+    }
+
     res.json({
       status: "succcess",
       data: users,
@@ -145,7 +195,6 @@ router.put('/:user_id', async function(req, res) {
     });
   } catch (err) {
     console.log(err);
-
     res.status(500).json({
       status: 'error',
       message: 'Error occured while updating the user',
