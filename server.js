@@ -1,11 +1,11 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
-const port = 6010;
 const mongoose = require("mongoose");
 const cors = require("cors");
 const UserRoute = require("./routes/UserRoute");
 const LeaveRequestRoute = require("./routes/LeaveRequestRoute"); 
 const env = require("./env");
+const port = env.port;
 const app = express();
 // const cors = require('cors');
 
