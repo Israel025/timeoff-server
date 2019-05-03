@@ -9,7 +9,7 @@ const port = env.port;
 const app = express();
 // const cors = require('cors');
 
-mongoose.connect(env.mongodb_url).then(() => {
+mongoose.connect(env.mongodb_url, {useNewUrlParser: true, useCreateIndex: true}).then(() => {
   console.log("DB Connection Successful");
 })
 .catch(err => {
@@ -19,7 +19,7 @@ mongoose.connect(env.mongodb_url).then(() => {
 app.use(cors());
 
 app.use((req, res, next)=>{
-  console.log(`$[${new Date().toTimeString}]: ${reg.method} ${req.url}`);
+  console.log(`$[${new Date().toTimeString()}]: ${reg.method} ${req.url}`);
 
   next();
 });
