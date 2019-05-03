@@ -19,7 +19,7 @@ mongoose.connect(env.mongodb_url, {useNewUrlParser: true, useCreateIndex: true})
 app.use(cors());
 
 app.use((req, res, next)=>{
-  console.log(`$[${new Date().toTimeString()}]: ${reg.method} ${req.url}`);
+  console.log(`$[${new Date().toTimeString()}]: ${req.method} ${req.url}`);
 
   next();
 });
