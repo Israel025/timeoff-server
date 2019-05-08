@@ -3,33 +3,34 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const UserRoute = require("./routes/UserRoute");
-const LeaveRequestRoute = require("./routes/LeaveRequestRoute"); 
+const LeaveRequestRoute = require("./routes/LeaveRequestRoute");
 const env = require("./env");
 const port = env.port;
 const app = express();
 // const cors = require('cors');
 
-mongoose.connect(env.mongodb_url, {useNewUrlParser: true, useCreateIndex: true}).then(() => {
-  console.log("DB Connection Successful");
-})
-.catch(err => {
-  console.log("DB connection failed!", err);
-});
+mongoose
+  .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
+  .then(() => {
+    console.log("DB Connection Successful");
+  })
+  .catch(err => {
+    console.log("DB connection failed!", err);
+  });
 
 app.use(cors());
 
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
   console.log(`$[${new Date().toTimeString()}]: ${req.method} ${req.url}`);
 
   next();
 });
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
-app.use('/user', UserRoute);
-app.use('/leave', LeaveRequestRoute);
-
+app.use("/user", UserRoute);
+app.use("/leave", LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
   console.log(`Server running on ${port}`);

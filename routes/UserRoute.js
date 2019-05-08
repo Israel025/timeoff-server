@@ -8,68 +8,73 @@ const env = require("../env");
 
 //signup a new user
 router.post("/", async (req, res) => {
-  try{
-    req.body.password = await bcrypt. hash(req.body.password, 10);
+  try {
+    req.body.password = await bcrypt.hash(req.body.password, 10);
     req.body.user_id = `UN${Math.floor(1000 + Math.random() * 9000)}`;
-    
+
     const user = await UserModel.create(req.body);
 
     const result = user.toJSON();
 
     delete result.password;
 
-    const token = jwt.sign({id: user.id}, env.jwt_secret, {expiresIn: "1h"});
+    const token = jwt.sign({ id: user.id }, env.jwt_secret, {
+      expiresIn: "12h"
+    });
 
     res.status(200).json({
       status: "success",
-      data: {user: result, token},
+      data: { user: result, token }
     });
-  } catch(err){
+  } catch (err) {
     console.log(err);
 
     res.status(500).json({
       status: 500,
       message: "An error occured while creating your user account"
-    })
+    });
   }
 });
 
 //login a user
-router.post("/login", async function(req, res){
+router.post("/login", async function(req, res) {
   try {
-    const user = await UserModel.findOne({email: req.body.email}, "+password");
-    
-    if(!user){
-      return res
-        .status(401)
-        .json({
-          status:"error", 
-          message: "Invalid login details"
-        });
+    const user = await UserModel.findOne(
+      { email: req.body.email },
+      "+password"
+    );
+
+    if (!user) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid login details"
+      });
     }
 
-    const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
-    if(!isPasswordValid){
-      return res
-        .status(401)
-        .json({
-          status:"error", 
-          message: "Invalid login details"
-        });
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid login details"
+      });
     }
 
-    const token  = jwt.sign({id: user.id}, env.jwt_secret);
-    
-    res.json({
-      status: "success",
-      data: {token}
+    const token = jwt.sign({ id: user.id }, env.jwt_secret, {
+      expiresIn: "12h"
     });
 
+    res.json({
+      status: "success",
+      data: { token }
+    });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Error occured during login',
+      status: "error",
+      message: "Error occured during login"
     });
   }
 });
@@ -77,29 +82,28 @@ router.post("/login", async function(req, res){
 // Get s user's profile
 router.get("/profile", AuthMiddleware, async function(req, res) {
   try {
+    const user = await UserModel.findById(req.user);
 
-    const user = await UserModel.findById(req.user);  
-
-    if(!user){
+    if (!user) {
       return res
         .status(404)
-        .json({status:"error", message: "User's details not available"});
+        .json({ status: "error", message: "User's details not available" });
     }
-
-    // res.json({
-    //   status: "success", 
-    //   user
-    // });
 
     res.json({
       status: "success",
-      data: user,
+      user
+    });
+
+    res.json({
+      status: "success",
+      data: user
     });
   } catch (err) {
     console.log(err);
     res.status(401).json({
       status: "error",
-      message: `${err.message}, Kindly login again`,
+      message: `${err.message}, Kindly login again`
     });
   }
 });
@@ -109,56 +113,56 @@ router.get("", async function(req, res) {
   try {
     const users = await UserModel.find();
 
-    if(users.length === 0){
+    if (users.length === 0) {
       return res.status(403).json({
-        status:"success", 
+        status: "success",
         message: "User details not available"
       });
     }
 
     res.json({
       status: "succcess",
-      data: users,
+      data: users
     });
   } catch (err) {
     console.log(err);
     res.status(500).json({
       status: "error",
-      message: "An error occured while getting users",
+      message: "An error occured while getting users"
     });
   }
 });
 
 // Delete a user
-router.delete('/:user_id', async function(req, res) {
+router.delete("/:user_id", async function(req, res) {
   try {
     const deletedUser = await UserModel.findOneAndDelete({
-      user_id: req.params.user_id,
+      user_id: req.params.user_id
     });
 
     if (!deletedUser) {
       res.status(404).json({
-        status: 'error',
-        message: "The User's record does not exist",
+        status: "error",
+        message: "The User's record does not exist"
       });
       return;
-    };
+    }
 
     res.json({
-      status: 'success',
-      message: 'User deleted successfully',
+      status: "success",
+      message: "User deleted successfully"
     });
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      status: 'error',
-      message: 'Error deleting the user',
+      status: "error",
+      message: "Error deleting the user"
     });
   }
 });
 
 // Update and edit a user
-router.put('/:user_id', async function(req, res) {
+router.put("/:user_id", async function(req, res) {
   try {
     const updatedUser = await UserModel.findOneAndUpdate(
       { user_id: req.params.user_id },
@@ -176,7 +180,7 @@ router.put('/:user_id', async function(req, res) {
         country: req.body.country,
         state: req.body.state,
         city: req.body.city,
-        gender: req.body.gender,
+        gender: req.body.gender
       },
       { new: true }
     );
@@ -184,20 +188,20 @@ router.put('/:user_id', async function(req, res) {
     // Check if user not found and updated
     if (!updatedUser) {
       res.status(404).json({
-        status: 'error',
-        message: 'Sorry that user record does not exist',
+        status: "error",
+        message: "Sorry that user record does not exist"
       });
     }
 
     res.json({
-      status: 'success',
-      data: updatedUser,
+      status: "success",
+      data: updatedUser
     });
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      status: 'error',
-      message: 'Error occured while updating the user',
+      status: "error",
+      message: "Error occured while updating the user"
     });
   }
 });
