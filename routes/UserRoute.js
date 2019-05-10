@@ -92,11 +92,6 @@ router.get("/profile", AuthMiddleware, async function(req, res) {
 
     res.json({
       status: "success",
-      user
-    });
-
-    res.json({
-      status: "success",
       data: user
     });
   } catch (err) {
