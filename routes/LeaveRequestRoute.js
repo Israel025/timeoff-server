@@ -8,13 +8,13 @@ const router = express.Router();
 //create a request
 router.post("/", AuthMiddleware, JoiValidator(CreateLeaveReqValidator), async function(req, res){
   try {
-
     const leaveRequest = await LeaveRequestModel.create({
       leave_type: req.body.leave_type,
       date_start: req.body.date_start,
       date_end: req.body.date_end,
       leave_reason: req.body.leave_reason,
-      user: req.user
+      user: req.user,
+      time_stamp: new Date().toLocaleString()
     });
 
     res.json({
