@@ -13,8 +13,8 @@ router.post("/", AuthMiddleware, JoiValidator(CreateLeaveReqValidator), async fu
       date_start: req.body.date_start,
       date_end: req.body.date_end,
       leave_reason: req.body.leave_reason,
-      user: req.user,
-      time_stamp: new Date().toLocaleString()
+      user: req.user
+      // time_stamp: new Date().toLocaleString()
     });
 
     res.json({
