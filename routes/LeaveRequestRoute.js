@@ -19,7 +19,9 @@ router.post("/", AuthMiddleware, JoiValidator(CreateLeaveReqValidator), async fu
 
     res.json({
       status: "success",
-      data: leaveRequest
+      data: leaveRequest,
+      "Access-Control-Allow-Origin": `https://izzy-timeoff.herokuapp.com`||`http://localhost:3000`,
+      Vary: Origin
     });
   } catch (err) {
     res.status(401).json({
@@ -36,7 +38,9 @@ router.get("/", AuthMiddleware, async function(req, res){
 
     res.json({
       status: "success",
-      data: leaveReqs    
+      data: leaveReqs,
+      "Access-Control-Allow-Origin": ["https://izzy-timeoff.herokuapp.com","http://localhost:3000"],
+      Vary: Origin    
     })
   } catch (err) {
     res.status(500).json({
