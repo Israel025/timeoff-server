@@ -13,7 +13,7 @@ app.use(cors());
 app.use(cors({
   'allowedHeaders': ['sessionId', 'Content-Type'],
   'exposedHeaders': ['sessionId'],
-  'origin': 'https://izzy-timeoff.herokuapp.com',
+  'origin': true,
   'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
   'preflightContinue': false
 }));
@@ -36,11 +36,18 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
 
-
+app.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type'],
+  'exposedHeaders': ['sessionId'],
+  'origin': true,
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
 app.use("/leave", LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
