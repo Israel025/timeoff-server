@@ -21,11 +21,11 @@ const LeaveRequestSchema = new mongoose.Schema({
   leave_reason:{
     type: String,
     required: true
-  }
-  // time_stamp:{
-  //   type: String,
-  //   required: true
-  // }   
+  },
+  time_stamp:{
+    type: String,
+    required: true
+  }   
 });
 
 const LeaveRequestModel = mongoose.model("LeaveRequest", LeaveRequestSchema);
