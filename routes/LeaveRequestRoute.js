@@ -19,9 +19,7 @@ router.post("/", AuthMiddleware, JoiValidator(CreateLeaveReqValidator), async fu
 
     res.json({
       status: "success",
-      data: leaveRequest,
-      "Access-Control-Allow-Origin": ["https://izzy-timeoff.herokuapp.com","http://localhost:3000"],
-      Vary: Origin
+      data: leaveRequest
     });
   } catch (err) {
     res.status(401).json({
