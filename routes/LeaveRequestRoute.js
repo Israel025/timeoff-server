@@ -1,9 +1,18 @@
 const express = require("express");
 const LeaveRequestModel = require("../models/LeaveRequestModel");
 const AuthMiddleware = require("../middlewares/auth");
+const cors = require("cors");
 const {CreateLeaveReqValidator} = require("../validators/LeaveRequestVAlidator");
 const JoiValidator = require("../middlewares/validator")
 const router = express.Router();
+
+router.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type'],
+  'exposedHeaders': ['sessionId'],
+  'origin': true,
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
 
 //create a request
 router.post("/", AuthMiddleware, JoiValidator(CreateLeaveReqValidator), async function(req, res){

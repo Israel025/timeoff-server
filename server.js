@@ -10,14 +10,6 @@ const app = express();
 
 app.use(cors());
 
-app.use(cors({
-  'allowedHeaders': ['sessionId', 'Content-Type'],
-  'exposedHeaders': ['sessionId'],
-  'origin': true,
-  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  'preflightContinue': false
-}));
-
 mongoose
   .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
@@ -41,14 +33,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
 
-app.use("/leave",
-cors({
-  'allowedHeaders': ['sessionId', 'Content-Type'],
-  'exposedHeaders': ['sessionId'],
-  'origin': true,
-  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  'preflightContinue': false
-}), LeaveRequestRoute);
+app.use("/leave", LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
   console.log(`Server running on ${port}`);
