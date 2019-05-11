@@ -9,6 +9,7 @@ const port = env.port;
 const app = express();
 
 app.use(cors());
+
 mongoose
   .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
@@ -30,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
-app.use("/leave", LeaveRequestRoute);
+app.use("/leave",  cors(), LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
   console.log(`Server running on ${port}`);
