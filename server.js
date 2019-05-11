@@ -10,6 +10,14 @@ const app = express();
 
 app.use(cors());
 
+app.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type'],
+  'exposedHeaders': ['sessionId'],
+  'origin': 'https://izzy-timeoff.herokuapp.com/',
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
+
 mongoose
   .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
@@ -31,6 +39,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
+
+
 app.use("/leave", LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
