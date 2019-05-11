@@ -7,7 +7,6 @@ const LeaveRequestRoute = require("./routes/LeaveRequestRoute");
 const env = require("./env");
 const port = env.port;
 const app = express();
-// const cors = require('cors');
 
 mongoose
   .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
@@ -20,6 +19,11 @@ mongoose
 
 app.use(cors());
 
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', `req.url`);
+  next();
+});
+
 app.use((req, res, next) => {
   console.log(`$[${new Date().toTimeString()}]: ${req.method} ${req.url}`);
 
@@ -30,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
-app.use("/leave", cors(), LeaveRequestRoute);
+app.use("/leave", LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
   console.log(`Server running on ${port}`);
