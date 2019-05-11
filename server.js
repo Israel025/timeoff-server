@@ -8,6 +8,7 @@ const env = require("./env");
 const port = env.port;
 const app = express();
 
+app.use(cors());
 mongoose
   .connect(env.mongodb_url, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
@@ -17,12 +18,7 @@ mongoose
     console.log("DB connection failed!", err);
   });
 
-app.use(cors());
 
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', `req.url`);
-  next();
-});
 
 app.use((req, res, next) => {
   console.log(`$[${new Date().toTimeString()}]: ${req.method} ${req.url}`);
