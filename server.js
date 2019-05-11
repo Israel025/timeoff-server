@@ -41,14 +41,14 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/user", UserRoute);
 
-app.use(cors({
+app.use("/leave",
+cors({
   'allowedHeaders': ['sessionId', 'Content-Type'],
   'exposedHeaders': ['sessionId'],
   'origin': true,
   'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
   'preflightContinue': false
-}));
-app.use("/leave", LeaveRequestRoute);
+}), LeaveRequestRoute);
 
 app.listen(port).on("listening", () => {
   console.log(`Server running on ${port}`);
