@@ -13,7 +13,7 @@ app.use(cors());
 app.use(cors({
   'allowedHeaders': ['sessionId', 'Content-Type'],
   'exposedHeaders': ['sessionId'],
-  'origin': 'https://izzy-timeoff.herokuapp.com/',
+  'origin': 'https://izzy-timeoff.herokuapp.com',
   'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
   'preflightContinue': false
 }));
